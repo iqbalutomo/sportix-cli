@@ -2,12 +2,12 @@
 
 ## Day 1: Tue 30 July 2024
 
-- [ ] **Init Project**
+- [x] **Init Project**
     - **Assigner**: Iqbal
     - Deadline: 18.00
     - Reviewers: [Yosia, Mufied]
 
-- [ ] **Database Schema**
+- [x] **Database Schema**
     - **Assigner**: Iqbal
     - Deadline: 20.00
     - Reviewers: [Yosia, Mufied]
