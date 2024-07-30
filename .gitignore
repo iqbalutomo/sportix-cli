@@ -1,0 +1,5 @@
+# ignore from default goland
+.idea/*
+
+# ignore env file
+.env
