@@ -19,12 +19,12 @@
 
 ## Day 2: Wed 31 Aug 2024
 
-- [ ] **Database Normalization**
+- [X] **Database Normalization**
     - **Assigner**: Mufied
     - Deadline: 11.00
     - Reviewers: [Iqbal, Yosia]
 
-- [ ] **ERD**
+- [X] **ERD**
     - **Assigner**: Mufied
     - Deadline: 13.00
     - Reviewers: [Iqbal, Yosia]
