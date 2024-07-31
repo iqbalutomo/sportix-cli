@@ -12,29 +12,29 @@
     - Deadline: 20.00
     - Reviewers: [Yosia, Mufied]
 
-- [ ] **Config DB**
+- [x] **Config DB**
     - **Assigner**: Iqbal
     - Deadline: 21.00
     - Reviewers: [Yosia, Mufied]
 
 ## Day 2: Wed 31 Aug 2024
 
-- [ ] **Database Normalization**
+- [x] **Database Normalization**
     - **Assigner**: Mufied
     - Deadline: 11.00
     - Reviewers: [Iqbal, Yosia]
 
-- [ ] **ERD**
+- [x] **ERD**
     - **Assigner**: Mufied
     - Deadline: 13.00
     - Reviewers: [Iqbal, Yosia]
 
-- [ ] **Seed Database**
+- [x] **Seed Database**
     - **Assigner**: Yosia
     - Deadline: 14.00
     - Reviewers: [Iqbal, Mufied]
 
-- [ ] **Database Documentation**
+- [x] **Database Documentation**
     - **Assigner**: Yosia
     - Deadline: 15.00
     - Reviewers: [Iqbal, Mufied]
@@ -44,7 +44,7 @@
     - Deadline: 16.00
     - Reviewers: [Mufied, Yosia]
 
-- [ ] **Auth Integration**
+- [x] **Auth Integration**
     - **Assigner**: Iqbal
     - Deadline: 19.00
     - Reviewers: [Mufied, Yosia]
