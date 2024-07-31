@@ -29,7 +29,7 @@
     - Deadline: 13.00
     - Reviewers: [Iqbal, Yosia]
 
-- [ ] **Seed Database**
+- [x] **Seed Database**
     - **Assigner**: Yosia
     - Deadline: 14.00
     - Reviewers: [Iqbal, Mufied]
