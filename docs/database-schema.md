@@ -47,7 +47,7 @@
 - location_id INT (PK, AI)
 - name VARCHAR(50) NOT NULL
 
-### 6. Entity: facilitates
+### 6. Entity: facilities
 ##### Attributes:
 - facility_id INT (PK, AI)
 - bathroom INT NOT NULL
@@ -84,7 +84,7 @@
 - payment_id INT (PK, AI)
 - reservation_id INT (FK)
 - amount DECIMAL(10, 2) NOT NULL
-- payment_date DATETIME NOT NULL
+- payment_date DATETIME NOT NULL DEFAULT NOW()
 - status ENUM('completed', 'pending') NOT NULL
 - created_at DATETIME
 - updated_at DATETIME
@@ -111,7 +111,7 @@
 - **Type:** Many to One
 - **Description: Multiple fields can be in the same location, but each field is in only one location.**
 
-### 6. fields to facilitates
+### 6. fields to facilities
 - **Type:** One to One
 - **Description: Each field has one set of facilities, and each set of facilities belongs to one field.**
 
