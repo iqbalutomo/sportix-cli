@@ -11,8 +11,11 @@ import (
 
 type UserRepo interface {
 	CreateUser(user *entity.User) error
+	CreateWallet(user *entity.User) error
 	FindUserByEmail(email string) (*entity.User, error)
 	ValidateUser(email, password string) (*entity.User, error)
+	FindBalanceByEmail(email string) (float64, error)
+	UpdateBalance(userID uint, deposit float64) error
 }
 
 type userRepo struct {
@@ -26,6 +29,17 @@ func NewUserRepo(db *sql.DB) UserRepo {
 func (u *userRepo) CreateUser(user *entity.User) error {
 	query := `INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?);`
 	_, err := u.db.Exec(query, user.Username, user.Email, user.Password, user.Role)
+	if err != nil {
+		log.Fatal(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (u *userRepo) CreateWallet(user *entity.User) error {
+	query := `INSERT INTO wallets (user_id) VALUES (?);`
+	_, err := u.db.Exec(query, user.UserID)
 	if err != nil {
 		log.Fatal(err.Error())
 		return err
@@ -66,4 +80,35 @@ func (auth *userRepo) ValidateUser(email, password string) (*entity.User, error)
 	}
 
 	return user, nil
+}
+
+func (u *userRepo) FindBalanceByEmail(email string) (float64, error) {
+	var wallet float64
+
+	query := `SELECT w.balance
+			FROM users u
+			JOIN wallets w ON u.user_id = w.user_id
+			WHERE email = ?;`
+	rows := u.db.QueryRow(query, email)
+
+	if err := rows.Scan(&wallet); err != nil {
+		if err == sql.ErrNoRows {
+			return 0, err
+		}
+
+		return 0, err
+	}
+
+	return wallet, nil
+}
+
+func (u *userRepo) UpdateBalance(userID uint, totalBalance float64) error {
+	query := `UPDATE wallets SET balance = ? WHERE user_id = ?;`
+
+	_, err := u.db.Exec(query, totalBalance, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
