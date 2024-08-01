@@ -1,13 +1,15 @@
 package entity
 
+import "time"
+
 type User struct {
 	UserID    uint
 	Username  string
 	Email     string
 	Password  string
 	Role      string
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type CurrentUser struct {
@@ -15,6 +17,6 @@ type CurrentUser struct {
 	Username  string
 	Email     string
 	Role      string
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

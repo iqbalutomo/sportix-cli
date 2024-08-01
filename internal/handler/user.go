@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 	"sportix-cli/internal/entity"
-	repository "sportix-cli/internal/repository/user"
+	"sportix-cli/internal/repository"
 
 	"golang.org/x/crypto/bcrypt"
 )
