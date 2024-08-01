@@ -1,9 +1,9 @@
 -- Clear the database if it exists
-DROP DATABASE IF EXISTS sportix_development_DDL_DML;
+DROP DATABASE IF EXISTS sportix_development;
 -- Create the database if it does not exist
-CREATE DATABASE IF NOT EXISTS sportix_development_DDL_DML;
+CREATE DATABASE IF NOT EXISTS sportix_development;
 -- Use the database
-USE sportix_development_DDL_DML;
+USE sportix_development;
 
 
 -- Create the users table
@@ -14,8 +14,8 @@ CREATE TABLE users
     email      VARCHAR(50)  NOT NULL UNIQUE,
     password   VARCHAR(100) NOT NULL,
     role       ENUM ('owner', 'user') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT  NOW(),
-    updated_at TIMESTAMP DEFAULT  NOW() ON UPDATE  NOW()
+    created_at TIMESTAMP              DEFAULT NOW(),
+    updated_at TIMESTAMP              DEFAULT NOW() ON UPDATE NOW()
 );
 
 -- Create the wallets table
@@ -60,8 +60,8 @@ CREATE TABLE locations
     name        VARCHAR(50) NOT NULL
 );
 
--- Create the facilitates table
-CREATE TABLE facilitates
+-- Create the facilities table
+CREATE TABLE facilities
 (
     facility_id   INT PRIMARY KEY AUTO_INCREMENT,
     bathroom      INT  NOT NULL,
@@ -116,7 +116,7 @@ CREATE TABLE payments
     payment_id     INT PRIMARY KEY AUTO_INCREMENT,
     reservation_id INT                           NOT NULL,
     amount         DECIMAL(10, 2)                NOT NULL,
-    payment_date   DATETIME                      NOT NULL,
+    payment_date   DATETIME DEFAULT NOW()        NOT NULL,
     status         ENUM ('completed', 'pending') NOT NULL,
     created_at     DATETIME DEFAULT NOW(),
     updated_at     DATETIME DEFAULT NOW() ON UPDATE NOW()
@@ -136,7 +136,7 @@ ALTER TABLE deposits
 ALTER TABLE fields
     ADD CONSTRAINT fk_fields_category_id FOREIGN KEY (category_id) REFERENCES categories (category_id),
     ADD CONSTRAINT fk_fields_location_id FOREIGN KEY (location_id) REFERENCES locations (location_id),
-    ADD CONSTRAINT fk_fields_facility_id FOREIGN KEY (facility_id) REFERENCES facilitates (facility_id),
+    ADD CONSTRAINT fk_fields_facility_id FOREIGN KEY (facility_id) REFERENCES facilities (facility_id),
     ADD CONSTRAINT fk_fields_created_by FOREIGN KEY (created_by) REFERENCES users (user_id);
 
 -- Foreign key constraint for field_available_hours table
