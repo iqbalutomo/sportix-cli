@@ -1,10 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"sportix-cli/config"
+	"sportix-cli/internal/cli"
 	"sportix-cli/internal/db"
+	handler "sportix-cli/internal/handler/user"
+	repository "sportix-cli/internal/repository/user"
+
+	"github.com/rivo/tview"
 )
 
 func main() {
@@ -20,5 +24,12 @@ func main() {
 	}
 	defer db.Close()
 
-	fmt.Println("database connected successfully!")
+	userRepo := repository.NewUserRepo(db)
+	userHandler := handler.NewUserHandler(userRepo)
+
+	app := tview.NewApplication()
+	cli.MainCLI(app, cli.Handler{
+		User: userHandler,
+	})
+
 }
