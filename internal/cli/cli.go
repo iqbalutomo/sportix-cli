@@ -1,14 +1,15 @@
 package cli
 
 import (
-	handler "sportix-cli/internal/handler/user"
+	"sportix-cli/internal/handler"
 	"sportix-cli/internal/session"
 
 	"github.com/rivo/tview"
 )
 
 type Handler struct {
-	User handler.UserHandler
+	User  handler.UserHandler
+	Field handler.FieldHandler
 }
 
 func MainCLI(app *tview.Application, handler Handler) {

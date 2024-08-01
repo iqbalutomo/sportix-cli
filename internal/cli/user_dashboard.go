@@ -27,13 +27,14 @@ func UserDashboardPage(app *tview.Application, handler Handler) {
 		AddItem("Logout", "", 0, func() {})
 	setting.SetTitle("Setting").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
-	content := tview.NewTextView().
-		SetText("Select an item from the sidebar to see the content here")
-	content.SetDynamicColors(true).
-		SetTextAlign(tview.AlignLeft).
-		SetBorder(true).
-		SetTitle("Content").
-		SetTitleAlign(tview.AlignCenter)
+	content := tview.NewFlex().
+		SetDirection(tview.FlexRow).
+		AddItem(tview.NewTextView().SetText("Select an item from the sidebar to see the content here").
+			SetDynamicColors(true).
+			SetTextAlign(tview.AlignLeft).
+			SetBorder(true).
+			SetTitle("User Dashboard").
+			SetTitleAlign(tview.AlignCenter), 0, 1, true)
 
 	styles.ApplyTheme(filter)
 	styles.ApplyTheme(nav)
@@ -69,25 +70,56 @@ func UserDashboardPage(app *tview.Application, handler Handler) {
 	filter.SetSelectedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
 		switch index {
 		case 0:
-			content.SetText("search content")
-			content.SetTitle("Search")
+			content.Clear()
+			searchView := tview.NewTextView().
+				SetText("You selected Search.\nHere you can search for items.").
+				SetDynamicColors(true).
+				SetTextAlign(tview.AlignLeft).
+				SetBorder(true).
+				SetTitle("Search").
+				SetTitleAlign(tview.AlignCenter)
+			content.AddItem(searchView, 0, 1, true)
 		case 1:
-			content.SetText("filter content")
-			content.SetTitle("Filter")
+			content.Clear()
+			filterView := tview.NewTextView().
+				SetText("You selected Filter.\nHere you can filter available options.").
+				SetDynamicColors(true).
+				SetTextAlign(tview.AlignLeft).
+				SetBorder(true).
+				SetTitle("Filter").
+				SetTitleAlign(tview.AlignCenter)
+			content.AddItem(filterView, 0, 1, true)
 		}
 	})
 
 	nav.SetSelectedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
 		switch index {
 		case 0:
-			content.SetText("profile content")
-			content.SetTitle("Profile")
+			content.Clear().SetTitle("").SetBorder(false)
+			profileView := tview.NewForm().AddInputField("Username", "", 20, nil, nil).
+				AddPasswordField("Password", "", 20, '*', nil)
+			profileView.
+				SetBorder(true).
+				SetTitle("Profile").
+				SetTitleAlign(tview.AlignCenter)
+
+			content.AddItem(profileView, 0, 1, true)
 		case 1:
-			content.SetText("field list content")
+			content.Clear().SetTitle("").SetBorder(false)
+			fieldsView := ShowFields(app, handler, content)
+			content.AddItem(fieldsView, 0, 1, true)
+			content.SetBorder(true)
 			content.SetTitle("Field List")
 		case 2:
-			content.SetText("reservation content")
-			content.SetTitle("Reservation Field")
+			content.Clear().SetTitle("").SetBorder(false)
+			reservationView := tview.NewTextView().
+				SetText("You selected Reservation Field.\nHere you can reserve a field.").
+				SetDynamicColors(true).
+				SetTextAlign(tview.AlignLeft).
+				SetBorder(true).
+				SetTitle("Reservation Field").
+				SetTitleAlign(tview.AlignCenter)
+			content.AddItem(reservationView, 0, 1, true)
 		}
 	})
 

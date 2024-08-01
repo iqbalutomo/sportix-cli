@@ -5,8 +5,8 @@ import (
 	"sportix-cli/config"
 	"sportix-cli/internal/cli"
 	"sportix-cli/internal/db"
-	handler "sportix-cli/internal/handler/user"
-	repository "sportix-cli/internal/repository/user"
+	"sportix-cli/internal/handler"
+	"sportix-cli/internal/repository"
 
 	"github.com/rivo/tview"
 )
@@ -27,9 +27,13 @@ func main() {
 	userRepo := repository.NewUserRepo(db)
 	userHandler := handler.NewUserHandler(userRepo)
 
+	fieldRepo := repository.NewFieldRepo(db)
+	fieldHandler := handler.NewFieldHandler(fieldRepo)
+
 	app := tview.NewApplication()
 	cli.MainCLI(app, cli.Handler{
-		User: userHandler,
+		User:  userHandler,
+		Field: fieldHandler,
 	})
 
 }
