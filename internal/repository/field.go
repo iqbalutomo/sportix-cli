@@ -2,12 +2,14 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"sportix-cli/internal/entity"
 )
 
 type FieldRepo interface {
 	FindAllFields() ([]entity.Field, error)
 	FindAllHoursByFieldID(fieldID uint) ([]entity.FieldAvailableHour, error)
+	AddNewField(field *entity.Field) error
 }
 
 type fieldRepo struct {
@@ -65,4 +67,50 @@ func (f *fieldRepo) FindAllHoursByFieldID(fieldID uint) ([]entity.FieldAvailable
 	}
 
 	return fieldAvailableHours, nil
+}
+
+func (f *fieldRepo) AddNewField(field *entity.Field) error {
+
+	// Begin a transaction
+	tx, err := f.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Insert into the facilities table
+	facilityQuery := `INSERT INTO facilities (bathroom, cafeteria, vehicle_park, prayer_room, changing_room, cctv)
+    		VALUES (?, ?, ?, ?, ?, ?);`
+	result, err := tx.Exec(facilityQuery, field.Facility.Bathroom, field.Facility.Cafeteria, field.Facility.VehiclePark, field.Facility.PrayerRoom, field.Facility.ChangingRoom, field.Facility.CCTV)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error inserting into facilities table: %v", err)
+	}
+
+	// Get the last inserted facility ID
+	facilityID, err := result.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error getting last inserted facility ID: %v", err)
+	}
+
+	facilityId := int(facilityID)
+
+	// Insert into the fields table
+	fieldQuery := `INSERT INTO fields (name, price, category_id, location_id, address, facility_id, created_by)
+						VALUES (?, ?, ?, ?, ?, ?, ?);`
+
+	result, err = tx.Exec(fieldQuery, field.Name, field.Price, field.Category.CategoryID, field.Location.LocationID, field.Address, facilityId, field.CreatedBy.UserID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error inserting into fields table: %v", err)
+	}
+
+	// Commit the transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error committing transaction: %v", err)
+	}
+
+	return nil
 }

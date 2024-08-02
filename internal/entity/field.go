@@ -14,3 +14,29 @@ type Field struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type FormAddsField struct {
+	Name         string
+	Price        string
+	CategoryID   int
+	LocationID   int
+	Address      string
+	Bathroom     string
+	Cafeteria    string
+	VehiclePark  string
+	PrayerRoom   string
+	ChangingRoom string
+	CCTV         string
+	CreatedByID  string
+}
+
+type FieldRepo struct {
+	FieldID    int
+	Name       string
+	Price      float64
+	CategoryID int
+	LocationID int
+	Address    string
+	FacilityID int
+	CreatedBy  int
+}
