@@ -61,7 +61,7 @@
     - Deadline: 13.00
     - Reviewers: [Mufied, Yosia]
 
-- [ ] **Show Field Integration**
+- [x] **Show Field Integration**
     - **Assigner**: Iqbal
     - Deadline: 15.00
     - Reviewers: [Mufied, Yosia]
@@ -101,7 +101,7 @@
     - Deadline: 16.00
     - Reviewers: [Iqbal, Mufied]
 
-- [ ] **Reservation Unit Test**
+- [x] **Reservation Unit Test**
     - **Assigner**: Iqbal
     - Deadline: 18.00
     - Reviewers: [Mufied, Yosia]

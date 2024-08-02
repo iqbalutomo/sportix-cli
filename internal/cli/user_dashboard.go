@@ -3,6 +3,7 @@ package cli
 import (
 	"sportix-cli/internal/session"
 	"sportix-cli/internal/styles"
+	"sportix-cli/internal/utils"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -11,16 +12,15 @@ import (
 func UserDashboardPage(app *tview.Application, handler Handler) {
 	filter := tview.NewList().
 		ShowSecondaryText(false).
-		AddItem("Search", "", 0, func() {}).
-		AddItem("Filter", "", 0, func() {})
-	filter.SetTitle("Filter / Search").SetBorder(true).SetTitleAlign(tview.AlignCenter)
+		AddItem("Balance: "+utils.FormatRupiah(session.UserSession.Balance), "", 0, func() {})
+	filter.SetTitle("Your Wallet").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	nav := tview.NewList().
 		ShowSecondaryText(false).
 		AddItem("Profile", "", 0, func() {}).
-		AddItem("Show Fields", "", 0, func() {}).
+		AddItem("Field List", "", 0, func() {}).
 		AddItem("Reservation Field", "", 0, func() {})
-	nav.SetTitle("Welcome, " + session.UserSession.Username).SetBorder(true).SetTitleAlign(tview.AlignCenter)
+	nav.SetTitle("Menu").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	setting := tview.NewList().
 		ShowSecondaryText(false).
@@ -29,11 +29,11 @@ func UserDashboardPage(app *tview.Application, handler Handler) {
 
 	content := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetText("Select an item from the sidebar to see the content here").
+		AddItem(tview.NewTextView().
 			SetDynamicColors(true).
 			SetTextAlign(tview.AlignLeft).
 			SetBorder(true).
-			SetTitle("User Dashboard").
+			SetTitle("User Dashboard: Welcome, "+session.UserSession.Username).
 			SetTitleAlign(tview.AlignCenter), 0, 1, true)
 
 	styles.ApplyTheme(filter)
@@ -70,25 +70,11 @@ func UserDashboardPage(app *tview.Application, handler Handler) {
 	filter.SetSelectedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
 		switch index {
 		case 0:
-			content.Clear()
-			searchView := tview.NewTextView().
-				SetText("You selected Search.\nHere you can search for items.").
-				SetDynamicColors(true).
-				SetTextAlign(tview.AlignLeft).
-				SetBorder(true).
-				SetTitle("Search").
-				SetTitleAlign(tview.AlignCenter)
-			content.AddItem(searchView, 0, 1, true)
-		case 1:
-			content.Clear()
-			filterView := tview.NewTextView().
-				SetText("You selected Filter.\nHere you can filter available options.").
-				SetDynamicColors(true).
-				SetTextAlign(tview.AlignLeft).
-				SetBorder(true).
-				SetTitle("Filter").
-				SetTitleAlign(tview.AlignCenter)
-			content.AddItem(filterView, 0, 1, true)
+			content.Clear().SetTitle("").SetBorder(false)
+			depositView := ShowDeposit(app, handler)
+			content.AddItem(depositView, 0, 1, true)
+			content.SetBorder(true)
+			content.SetTitle("Deposit Wallet")
 		}
 	})
 

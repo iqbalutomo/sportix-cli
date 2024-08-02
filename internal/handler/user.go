@@ -11,6 +11,8 @@ import (
 type UserHandler interface {
 	Register(name, email, password, role string) error
 	Login(email, password string) (*entity.User, error)
+	GetBalanceByEmail(email string) (float64, error)
+	PutBalance(userID uint, balance, deposit float64) error
 }
 
 type userHandler struct {
@@ -47,6 +49,10 @@ func (u *userHandler) Register(name, email, password, role string) error {
 		return errors.New("failed to register")
 	}
 
+	if err := u.repo.CreateWallet(user); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -57,4 +63,22 @@ func (auth *userHandler) Login(email, password string) (*entity.User, error) {
 	}
 
 	return user, nil
+}
+
+func (u *userHandler) GetBalanceByEmail(email string) (float64, error) {
+	balance, err := u.repo.FindBalanceByEmail(email)
+	if err != nil {
+		return 0, nil
+	}
+
+	return balance, nil
+}
+
+func (u *userHandler) PutBalance(userID uint, balance, deposit float64) error {
+	totalBalance := balance + deposit
+	if err := u.repo.UpdateBalance(userID, totalBalance); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -17,6 +17,7 @@ type CurrentUser struct {
 	Username  string
 	Email     string
 	Role      string
+	Balance   float64
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
