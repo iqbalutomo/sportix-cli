@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"sportix-cli/constants"
 	"sportix-cli/internal/session"
 	"sportix-cli/internal/utils"
 	"strconv"
@@ -34,10 +35,10 @@ func ShowDeposit(app *tview.Application, handler Handler) tview.Primitive {
 				return
 			}
 
-			//if err := handler.User.PutBalance(session.UserSession.UserID, session.UserSession.Balance, totalDeposit); err != nil {
-			//	showAlertModal(app, handler, "Failed to deposit, try again!")
-			//	return
-			//}
+			if err := handler.User.PutBalance(session.UserSession.UserID, session.UserSession.Balance, totalDeposit); err != nil {
+				showAlertModal(app, handler, "Failed to deposit, try again!")
+				return
+			}
 
 			session.UserSession.Balance += totalDeposit
 
@@ -54,8 +55,11 @@ func showAlertModal(app *tview.Application, handler Handler, textErr string) {
 		SetText(textErr).
 		AddButtons([]string{"OK"}).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-
+		if session.UserSession.Role == constants.User {
+			UserDashboardPage(app, handler)
+		} else {
 			OwnerDashboardPage(app, handler)
+		}
 		})
 
 	app.SetRoot(modal, true)
