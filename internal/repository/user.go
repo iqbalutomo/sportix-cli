@@ -32,7 +32,7 @@ func (u *userRepo) CreateUser(user *entity.User) error {
 	}
 
 	query := `INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?);`
-	result, err := u.db.Exec(query, user.Username, user.Email, user.Password, user.Role)
+	result, err := tx.Exec(query, user.Username, user.Email, user.Password, user.Role)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error creating user table: %v", err)
@@ -49,7 +49,7 @@ func (u *userRepo) CreateUser(user *entity.User) error {
 
 	// Create a wallet for the user
 	query = `INSERT INTO wallets (user_id) VALUES (?);`
-	_, err = u.db.Exec(query, user.UserID)
+	_, err = tx.Exec(query, user.UserID)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error creating wallet table: %v", err)
@@ -73,7 +73,7 @@ func (u *userRepo) FindUserByEmail(email string) (*entity.User, error) {
 
 	if err := rows.Scan(&user.UserID, &user.Username, &user.Password, &user.Email, &user.Role); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, err
+			return nil, nil
 		}
 
 		return nil, err
