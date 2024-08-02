@@ -2,6 +2,7 @@ package cli
 
 import (
 	"os"
+	"sportix-cli/constants"
 	"sportix-cli/internal/entity"
 	"sportix-cli/internal/session"
 
@@ -31,8 +32,8 @@ func AuthModal(app *tview.Application, handler Handler) {
 func RegisterPage(app *tview.Application, handler Handler) {
 	var user entity.User
 
-	roleOptions := []string{"user", "owner"}
-	selectedRole := roleOptions[0]
+	//roleOptions := []string{"user", "owner"}
+	selectedRole := constants.User
 
 	form := tview.NewForm().
 		AddInputField("Username:", "", 40, nil, func(text string) {
@@ -44,7 +45,7 @@ func RegisterPage(app *tview.Application, handler Handler) {
 		AddPasswordField("Password:", "", 40, '*', func(text string) {
 			user.Password = text
 		}).
-		AddDropDown("Role:", roleOptions, 0, func(option string, index int) {
+		AddDropDown("Role:", constants.RoleOptions, 0, func(option string, index int) {
 			selectedRole = option
 			user.Role = selectedRole
 		}).
@@ -138,7 +139,11 @@ func LoginPage(app *tview.Application, handler Handler) {
 				SetText("Login successfully").
 				AddButtons([]string{"OK"}).
 				SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-					UserDashboardPage(app, handler)
+					if user.Role == constants.User {
+						UserDashboardPage(app, handler)
+					} else {
+						OwnerDashboardPage(app, handler)
+					}
 				})
 			app.SetRoot(successModal, true).EnableMouse(true).Run()
 		}).

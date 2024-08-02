@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"sportix-cli/constants"
 	"sportix-cli/internal/session"
 	"sportix-cli/internal/utils"
 	"strconv"
@@ -54,8 +55,11 @@ func showAlertModal(app *tview.Application, handler Handler, textErr string) {
 		SetText(textErr).
 		AddButtons([]string{"OK"}).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-
+		if session.UserSession.Role == constants.User {
 			UserDashboardPage(app, handler)
+		} else {
+			OwnerDashboardPage(app, handler)
+		}
 		})
 
 	app.SetRoot(modal, true)

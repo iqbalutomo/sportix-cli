@@ -8,8 +8,10 @@ import (
 )
 
 type Handler struct {
-	User  handler.UserHandler
-	Field handler.FieldHandler
+	User     handler.UserHandler
+	Location handler.LocationHandler
+	Category handler.CategoryHandler
+	Field    handler.FieldHandler
 }
 
 func MainCLI(app *tview.Application, handler Handler) {
@@ -20,6 +22,7 @@ func MainCLI(app *tview.Application, handler Handler) {
 			UserDashboardPage(app, handler)
 		} else {
 			// TODO: admin dasboard ya, semangat!
+			OwnerDashboardPage(app, handler)
 		}
 	}
 }
