@@ -9,22 +9,28 @@ import (
 )
 
 type Handler struct {
-	User     handler.UserHandler
-	Field    handler.FieldHandler
-	Facility handler.FacilityHandler
-	Category handler.CategoryHandler
-	Location handler.LocationHandler
+	User        handler.UserHandler
+	Location    handler.LocationHandler
+	Category    handler.CategoryHandler
+	Field       handler.FieldHandler
+	Reservation handler.ReservationHandler
 }
 
 func MainCLI(app *tview.Application, handler Handler) {
-	user, err := handler.User.Login("chloe@mail.com", "password123")
+	user, err := handler.User.Login("iqbal@sportix.com", "gogogo")
+	if err != nil {
+		return
+	}
+	balance, err := handler.User.GetBalanceByEmail(user.Email)
 	if err != nil {
 		return
 	}
 	currentUser := &entity.CurrentUser{
+		UserID:   user.UserID,
 		Username: user.Username,
 		Email:    user.Email,
 		Role:     user.Role,
+		Balance:  balance,
 	}
 	session.UserSession = currentUser
 
