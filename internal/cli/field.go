@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"os"
 	"sportix-cli/constants"
 	"sportix-cli/internal/entity"
 	"sportix-cli/internal/utils"
@@ -41,13 +40,12 @@ func ShowFields(app *tview.Application, handler Handler, content *tview.Flex) tv
 
 	for row, item := range fields {
 		fieldIDStr := strconv.FormatUint(uint64(item.FieldID), 10)
-		priceStr := strconv.FormatFloat(item.Price, 'f', 2, 64)
 
 		table.SetCell(row+1, 0, tview.NewTableCell(fieldIDStr).
 			SetAlign(tview.AlignCenter))
 		table.SetCell(row+1, 1, tview.NewTableCell(item.Name).
 			SetAlign(tview.AlignCenter))
-		table.SetCell(row+1, 2, tview.NewTableCell(priceStr).
+		table.SetCell(row+1, 2, tview.NewTableCell(utils.FormatRupiah(item.Price)).
 			SetAlign(tview.AlignCenter))
 		table.SetCell(row+1, 3, tview.NewTableCell(item.Category.Name).
 			SetAlign(tview.AlignCenter))
@@ -188,7 +186,7 @@ func AddField(app *tview.Application, handler Handler, content *tview.Flex) tvie
 					SetText("All field cannot be empty").
 					AddButtons([]string{"OK"}).
 					SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-						AddField(app, handler, content)
+						OwnerDashboardPage(app, handler)
 					})
 				app.SetRoot(errorModal, true).EnableMouse(true).Run()
 				return
@@ -201,7 +199,7 @@ func AddField(app *tview.Application, handler Handler, content *tview.Flex) tvie
 					SetText(err.Error()).
 					AddButtons([]string{"OK"}).
 					SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-						AddField(app, handler, content)
+						OwnerDashboardPage(app, handler)
 					})
 				app.SetRoot(errorModal, true).EnableMouse(true).Run()
 				return
@@ -215,18 +213,7 @@ func AddField(app *tview.Application, handler Handler, content *tview.Flex) tvie
 				})
 
 			app.SetRoot(successModal, true).EnableMouse(true).Run()
-		}).
-		AddButton("Show", func() {
-			ShowFields(app, handler, content)
-		}).
-		AddButton("Exit", func() {
-			app.Stop()
-			os.Exit(0)
 		})
-
-	if err := app.SetRoot(form, true).EnableMouse(true).Run(); err != nil {
-		panic(err)
-	}
 
 	return form
 
