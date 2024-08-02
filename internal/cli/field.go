@@ -175,17 +175,7 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 	return flex
 }
 
-
 func UpdateFieldForm(app *tview.Application, handler Handler, content *tview.Flex) tview.Primitive {
-	// addFieldForm := &entity.FormAddsField{}
-
-	// categories, _ := handler.Category.GetAllCategory()
-	// categoriesOptions, _ := utils.ConvertStructSliceToStringSlice(categories, "Name")
-
-	// locations, _ := handler.Location.GetAllLocation()
-
-	// locationOptions, _ := utils.ConvertStructSliceToStringSlice(locations, "Name")
-
 	form := tview.NewForm()
 
 	idInput := tview.NewInputField()
@@ -196,17 +186,17 @@ func UpdateFieldForm(app *tview.Application, handler Handler, content *tview.Fle
 				id := idInput.GetText()
 				fieldID, err := strconv.Atoi(id)
 				if err != nil {
-					// showErrorModal(app, fmt.Errorf("invalid ID format"))
 					return
 				}
 
-				// Fetch the field by ID
 				field, err := handler.Field.GetFieldById(fieldID)
+				if err != nil {
+					showModal(app, handler, "Error", fmt.Sprintln("Your field not found."))
+					return
+				}
 				if err == nil {
 					field.FieldID = fieldID
 				}
-				// Populate the form with current field details
-				// form.Clear(true)
 				content.Clear().SetTitle("").SetBorder(false)
 				form.AddInputField("New Name", field.Name, 30, nil, func(text string) {
 					field.Name = text
@@ -220,12 +210,6 @@ func UpdateFieldForm(app *tview.Application, handler Handler, content *tview.Fle
 							field.Price = price
 						}
 					}).
-					// AddDropDown("Category", categoriesOptions, 0, func(option string, index int) {
-					// 	field.Category.CategoryID = index + 1
-					// }).
-					// AddDropDown("Location", locationOptions, 0, func(option string, index int) {
-					// 	field.Location.LocationID = index + 1
-					// }).
 					AddInputField("New Bathroom Count", strconv.Itoa(field.Facility.Bathroom), 10, nil, func(text string) {
 						bathroom, err := strconv.Atoi(text)
 						if err == nil {
@@ -280,34 +264,8 @@ func showModal(app *tview.Application, handler Handler, title, message string) {
 		SetText(message).
 		AddButtons([]string{"OK"}).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-			// app.SetRoot(nil, true) // Clear modal and return to previous screen
 			OwnerDashboardPage(app, handler)
 		})
 	modal.SetBorder(true).SetTitle(title).SetTitleAlign(tview.AlignCenter)
 	app.SetRoot(modal, true).SetFocus(modal)
-	app.Draw()
 }
-
-// func showErrorModal(app *tview.Application, err error) {
-// 	modal := tview.NewModal().
-// 		SetText(err.Error()).
-// 		AddButtons([]string{"OK"}).
-// 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-// 			if buttonLabel == "OK" {
-// 				OwnerDashboardPage(app, handler)
-// 			}
-// 		})
-// 	app.SetRoot(modal, true)
-// }
-
-// func showSuccessModal(app *tview.Application, message string) {
-// 	modal := tview.NewModal().
-// 		SetText(message).
-// 		AddButtons([]string{"OK"}).
-// 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-// 			if buttonLabel == "OK" {
-// 				OwnerDashboardPage(app, handler)
-// 			}
-// 		})
-// 	app.SetRoot(modal, true)
-// }

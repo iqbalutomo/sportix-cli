@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"sportix-cli/internal/entity"
+	"sportix-cli/internal/session"
 )
 
 type FieldRepo interface {
 	FindAllFields() ([]entity.Field, error)
 	FindAllHoursByFieldID(fieldID uint) ([]entity.FieldAvailableHour, error)
+	FindAllFieldsByOwner(userID uint) ([]entity.Field, error)
 	FindFieldById(fieldID int) (*entity.Field, error)
 	EditField(field *entity.Field) error
 }
@@ -123,8 +125,8 @@ JOIN
     facilities fac ON f.facility_id = fac.facility_id
 LEFT JOIN 
     users u ON f.created_by = u.user_id
-WHERE field_id=?`
-	row := f.db.QueryRow(query, fieldID)
+WHERE field_id=? AND f.created_by = ?;`
+	row := f.db.QueryRow(query, fieldID, session.UserSession.UserID)
 
 	if err := row.Scan(&field.FieldID, &field.Name, &field.Price, &field.Category.Name, &field.Location.Name, &field.Facility.Bathroom, &field.Facility.Cafeteria, &field.Facility.VehiclePark, &field.Facility.PrayerRoom, &field.Facility.ChangingRoom, &field.Facility.CCTV, &field.CreatedBy.Username); err != nil {
 		if err == sql.ErrNoRows {

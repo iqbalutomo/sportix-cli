@@ -17,7 +17,8 @@ type Handler struct {
 }
 
 func MainCLI(app *tview.Application, handler Handler) {
-	user, err := handler.User.Login("iqbal@sportix.com", "gogogo")
+	// user, err := handler.User.Login("iqbal@sportix.com", "gogogo")
+	user, err := handler.User.Login("juragan@lapangan.com", "1234")
 	if err != nil {
 		return
 	}

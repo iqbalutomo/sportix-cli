@@ -29,7 +29,6 @@
 // 	}
 // }
 
-
 package cli
 
 import (
@@ -50,10 +49,8 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 	nav := tview.NewList().
 		ShowSecondaryText(false).
 		AddItem("Profile", "", 0, func() {}).
-		AddItem("Reservation Field", "", 0, func() {}).
-		AddItem("Show all Fields", "", 0, func() {}).
-		AddItem("Add Field", "", 0, func() {}).
-		AddItem("Update Field", "", 0, func() {})
+		AddItem("Field List", "", 0, func() {}).
+		AddItem("Edit Field", "", 0, func() {})
 	nav.SetTitle("Welcome, " + session.UserSession.Username).SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	// field := tview.NewList().
@@ -111,8 +108,8 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 		switch index {
 		case 0:
 			content.Clear().SetTitle("").SetBorder(false)
-			// depositView := ShowDeposit(app, handler)
-			// content.AddItem(depositView, 0, 1, true)
+			depositView := ShowDeposit(app, handler)
+			content.AddItem(depositView, 0, 1, true)
 			content.SetBorder(true)
 			content.SetTitle("Deposit Wallet")
 		}
@@ -138,32 +135,32 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 			content.SetTitle("Field List")
 		case 2:
 			content.Clear().SetTitle("").SetBorder(false)
-			reservationView := tview.NewTextView().
-				SetText("You selected Reservation Field.\nHere you can reserve a field.").
-				SetDynamicColors(true).
-				SetTextAlign(tview.AlignLeft).
-				SetBorder(true).
-				SetTitle("Reservation Field").
-				SetTitleAlign(tview.AlignCenter)
-			content.AddItem(reservationView, 0, 1, true)
-		case 3:
-			content.Clear().SetTitle("").SetBorder(false)
-			fieldsView := ShowFields(app, handler, content)
-			content.AddItem(fieldsView, 0, 1, true)
-			content.SetBorder(true)
-			content.SetTitle("Field List")
-		case 4:
-			content.Clear().SetTitle("").SetBorder(false)
 			updateFieldView := UpdateFieldForm(app, handler, content)
 			content.AddItem(updateFieldView, 0, 1, true)
 			content.SetBorder(true)
-			content.SetTitle("Update Field")
-		case 5:
-			content.Clear().SetTitle("").SetBorder(false)
-			// addFieldView := AddField(app, handler, content)
-			// content.AddItem(addFieldView, 0, 1, true)
-			content.SetBorder(true)
-			content.SetTitle("Add Field")
+			content.SetTitle("Edit Field")
+			// case 2:
+			// 	content.Clear().SetTitle("").SetBorder(false)
+			// 	reservationView := tview.NewTextView().
+			// 		SetText("You selected Reservation Field.\nHere you can reserve a field.").
+			// 		SetDynamicColors(true).
+			// 		SetTextAlign(tview.AlignLeft).
+			// 		SetBorder(true).
+			// 		SetTitle("Reservation Field").
+			// 		SetTitleAlign(tview.AlignCenter)
+			// 	content.AddItem(reservationView, 0, 1, true)
+			// case 3:
+			// 	content.Clear().SetTitle("").SetBorder(false)
+			// 	fieldsView := ShowFields(app, handler, content)
+			// 	content.AddItem(fieldsView, 0, 1, true)
+			// 	content.SetBorder(true)
+			// 	content.SetTitle("Field List")
+			// case 5:
+			// 	content.Clear().SetTitle("").SetBorder(false)
+			// 	addFieldView := AddField(app, handler, content)
+			// 	content.AddItem(addFieldView, 0, 1, true)
+			// 	content.SetBorder(true)
+			// 	content.SetTitle("Add Field")
 		}
 	})
 

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"sportix-cli/internal/entity"
 	"sportix-cli/internal/repository"
-	"sportix-cli/internal/session"
-	"sportix-cli/internal/utils"
 )
 
 type FieldHandler interface {
