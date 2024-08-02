@@ -36,12 +36,16 @@ func main() {
 	fieldRepo := repository.NewFieldRepo(db)
 	fieldHandler := handler.NewFieldHandler(fieldRepo)
 
+	revRepo := repository.NewReservationRepo(db)
+	revHandler := handler.NewReservationHandler(revRepo)
+
 	app := tview.NewApplication()
 	cli.MainCLI(app, cli.Handler{
-		User:     userHandler,
-		Field:    fieldHandler,
-		Category: categoryHandler,
-		Location: locationHandler,
+		User:        userHandler,
+		Field:       fieldHandler,
+		Category:    categoryHandler,
+		Location:    locationHandler,
+		Reservation: revHandler,
 	})
 
 }

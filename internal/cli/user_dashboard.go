@@ -18,8 +18,7 @@ func UserDashboardPage(app *tview.Application, handler Handler) {
 	nav := tview.NewList().
 		ShowSecondaryText(false).
 		AddItem("Profile", "", 0, func() {}).
-		AddItem("Field List", "", 0, func() {}).
-		AddItem("Reservation Field", "", 0, func() {})
+		AddItem("Field List", "", 0, func() {})
 	nav.SetTitle("Menu").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	setting := tview.NewList().

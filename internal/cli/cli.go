@@ -9,14 +9,15 @@ import (
 )
 
 type Handler struct {
-	User     handler.UserHandler
-	Location handler.LocationHandler
-	Category handler.CategoryHandler
-	Field    handler.FieldHandler
+	User        handler.UserHandler
+	Location    handler.LocationHandler
+	Category    handler.CategoryHandler
+	Field       handler.FieldHandler
+	Reservation handler.ReservationHandler
 }
 
 func MainCLI(app *tview.Application, handler Handler) {
-	user, err := handler.User.Login("juragan@lapangan.com", "1234")
+	user, err := handler.User.Login("iqbal@sportix.com", "gogogo")
 	if err != nil {
 		return
 	}

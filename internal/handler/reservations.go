@@ -8,6 +8,7 @@ import (
 )
 
 type ReservationHandler interface {
+	AddReservation(field entity.Field, ahID int) error
 }
 
 type reservationHandler struct {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"sportix-cli/internal/entity"
+	"sportix-cli/internal/session"
 	"time"
 )
 
@@ -54,8 +55,10 @@ func (r *reservationRepo) CreateReservation(reservation entity.ReservationForm) 
 	}
 
 	// Update Wallets table
-	walletQuery := `UPDATE wallets SET balance = balance - ? WHERE user_id = ?;`
-	_, err = r.db.Exec(walletQuery, reservation.Amount, reservation.UserID)
+	updateBalance := session.UserSession.Balance - reservation.Amount
+	session.UserSession.Balance = updateBalance
+	walletQuery := `UPDATE wallets SET balance = ? WHERE user_id = ?;`
+	_, err = r.db.Exec(walletQuery, updateBalance, reservation.UserID)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error updating wallets table: %v", err)
