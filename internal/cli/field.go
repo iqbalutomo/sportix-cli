@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sportix-cli/constants"
 	"sportix-cli/internal/entity"
+	"sportix-cli/internal/session"
 	"sportix-cli/internal/utils"
 	"strconv"
 
@@ -119,7 +120,48 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 		hoursTable.SetCell(row+1, 1, tview.NewTableCell(data.AvailableHourID.EndTime).
 			SetAlign(tview.AlignCenter))
 		hoursTable.SetCell(row+1, 2, tview.NewTableCell(data.Status).
-			SetAlign(tview.AlignCenter))
+			SetAlign(tview.AlignCenter)).SetSelectedFunc(func(row, column int) {
+			errorModal := tview.NewModal().
+				SetText("Are you sure to book this field time?").
+				AddButtons([]string{"YES", "NO"}).
+				SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+					if buttonLabel == "YES" {
+						if err := handler.Reservation.AddReservation(field, int(data.AvailableHourID.AvailableHourID)); err != nil {
+							modal := tview.NewModal().
+								SetText("Failed reservation").
+								AddButtons([]string{""}).
+								SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+									if session.UserSession.Role == "user" {
+										UserDashboardPage(app, handler)
+									} else {
+										OwnerDashboardPage(app, handler)
+									}
+								})
+
+							app.SetRoot(modal, true)
+						}
+
+						modal := tview.NewModal().
+							SetText("Reservation Successfully!").
+							AddButtons([]string{""}).
+							SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+								if session.UserSession.Role == "user" {
+									UserDashboardPage(app, handler)
+								} else {
+									OwnerDashboardPage(app, handler)
+								}
+							})
+
+						app.SetRoot(modal, true)
+					}
+					if session.UserSession.Role == "user" {
+						UserDashboardPage(app, handler)
+					} else {
+						OwnerDashboardPage(app, handler)
+					}
+				})
+			app.SetRoot(errorModal, true).EnableMouse(true).Run()
+		})
 	}
 	hoursTable.SetBorder(true).SetTitle("Available Hours").SetTitleAlign(tview.AlignCenter)
 
