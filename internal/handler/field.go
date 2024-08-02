@@ -36,3 +36,7 @@ func (f *fieldHandler) GetFieldAvailableHours(fieldID uint) ([]entity.FieldAvail
 
 	return fields, nil
 }
+
+func (f *fieldHandler) EditField(updatedField *entity.Field) error {
+	return f.repo.EditField(updatedField)
+}

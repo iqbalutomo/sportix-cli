@@ -8,6 +8,8 @@ import (
 type FieldRepo interface {
 	FindAllFields() ([]entity.Field, error)
 	FindAllHoursByFieldID(fieldID uint) ([]entity.FieldAvailableHour, error)
+	FindFieldById(fieldID int) (*entity.Field, error)
+	EditField(field *entity.Field) error
 }
 
 type fieldRepo struct {
@@ -65,4 +67,48 @@ func (f *fieldRepo) FindAllHoursByFieldID(fieldID uint) ([]entity.FieldAvailable
 	}
 
 	return fieldAvailableHours, nil
+}
+
+func (f *fieldRepo) FindFieldById(fieldID int) (*entity.Field, error) {
+	var field entity.Field
+
+	query := `SELECT 
+    f.field_id,
+    f.name AS field_name,
+    f.price,
+    c.name AS category_name,
+    l.name AS location_name,
+    fac.bathroom,
+    fac.cafeteria,
+    fac.vehicle_park,
+    fac.prayer_room,
+    fac.changing_room,
+    fac.cctv,
+    u.username AS created_by_username
+FROM 
+    fields f
+JOIN 
+    categories c ON f.category_id = c.category_id
+JOIN 
+    locations l ON f.location_id = l.location_id
+JOIN 
+    facilities fac ON f.facility_id = fac.facility_id
+LEFT JOIN 
+    users u ON f.created_by = u.user_id
+WHERE field_id=?`
+	row := f.db.QueryRow(query, fieldID)
+
+	if err := row.Scan(&field.FieldID, &field.Name, &field.Price, &field.Category.Name, &field.Location.Name, &field.Facility.Bathroom, &field.Facility.Cafeteria, &field.Facility.VehiclePark, &field.Facility.PrayerRoom, &field.Facility.ChangingRoom, &field.Facility.CCTV, &field.CreatedBy.Username); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, err
+		}
+		return nil, err
+	}
+	return &field, nil
+}
+
+func (f *fieldRepo) EditField(field *entity.Field) error {
+	editFieldQuery := `UPDATE fields SET name=?, price=?, address=? WHERE field_id=?;`
+	_, err := f.db.Exec(editFieldQuery, field.Name, field.Price, field.Address, "", field.FieldID)
+	return err
 }
