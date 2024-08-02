@@ -67,6 +67,92 @@ func ShowFields(app *tview.Application, handler Handler, content *tview.Flex) tv
 	return table
 }
 
+func AddField(app *tview.Application, handler Handler, content *tview.Flex) tview.Primitive {
+
+	addFieldForm := &entity.FormAddsField{}
+
+	categories, _ := handler.Category.GetAllCategory()
+	categoriesOptions, _ := utils.ConvertStructSliceToStringSlice(categories, "Name")
+
+	locations, _ := handler.Location.GetAllLocation()
+
+	locationOptions, _ := utils.ConvertStructSliceToStringSlice(locations, "Name")
+
+	// Create form
+	form := tview.NewForm().
+		AddInputField("Name:", "", 40, nil, func(text string) {
+			addFieldForm.Name = text
+		}).
+		AddInputField("Price", "", 40, nil, func(text string) {
+			addFieldForm.Price = text
+		}).
+		AddDropDown("Category", categoriesOptions, 0, func(option string, index int) {
+			addFieldForm.CategoryID = index + 1
+		}).
+		AddDropDown("Location", locationOptions, 0, func(option string, index int) {
+			addFieldForm.LocationID = index + 1
+		}).
+		AddInputField("Address", "", 40, nil, func(text string) {
+			addFieldForm.Address = text
+		}).
+		AddInputField("Bathroom", "", 40, nil, func(text string) {
+			addFieldForm.Bathroom = text
+		}).
+		AddDropDown("Cafeteria", constants.YesNoOptions, 0, func(option string, index int) {
+			addFieldForm.Cafeteria = option
+		}).
+		AddInputField("Vehicle Park", "", 40, nil, func(text string) {
+			addFieldForm.VehiclePark = text
+		}).
+		AddDropDown("Prayer Room", constants.YesNoOptions, 0, func(option string, index int) {
+			addFieldForm.PrayerRoom = option
+		}).
+		AddInputField("Changing Room", "", 40, nil, func(text string) {
+			addFieldForm.ChangingRoom = text
+		}).
+		AddDropDown("CCTV", constants.YesNoOptions, 0, func(option string, index int) {
+			addFieldForm.CCTV = option
+		}).
+		AddButton("Add Field", func() {
+			// Check if it AddInputField is empty
+			if addFieldForm.Name == "" || addFieldForm.Price == "" || addFieldForm.Address == "" || addFieldForm.Bathroom == "" || addFieldForm.VehiclePark == "" || addFieldForm.ChangingRoom == "" {
+				errorModal := tview.NewModal().
+					SetText("All field cannot be empty").
+					AddButtons([]string{"OK"}).
+					SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+						OwnerDashboardPage(app, handler)
+					})
+				app.SetRoot(errorModal, true).EnableMouse(true).Run()
+				return
+			}
+
+			err := handler.Field.AddField(addFieldForm)
+
+			if err != nil {
+				errorModal := tview.NewModal().
+					SetText(err.Error()).
+					AddButtons([]string{"OK"}).
+					SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+						OwnerDashboardPage(app, handler)
+					})
+				app.SetRoot(errorModal, true).EnableMouse(true).Run()
+				return
+			}
+
+			successModal := tview.NewModal().
+				SetText("Add a New Field Successfully").
+				AddButtons([]string{"OK"}).
+				SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+					OwnerDashboardPage(app, handler)
+				})
+
+			app.SetRoot(successModal, true).EnableMouse(true).Run()
+		})
+
+	return form
+
+}
+
 func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field, handler Handler) tview.Primitive {
 	flex := tview.NewFlex().SetDirection(tview.FlexColumn)
 

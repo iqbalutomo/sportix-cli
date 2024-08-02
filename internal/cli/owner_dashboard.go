@@ -1,34 +1,3 @@
-// package cli
-
-// import (
-// 	"sportix-cli/internal/session"
-
-// 	"github.com/rivo/tview"
-// )
-
-// func OwnerDashboardPage(app *tview.Application, handler Handler) {
-// 	nav := tview.NewList().
-// 		ShowSecondaryText(false).
-// 		AddItem("1. Show Fields", "", 0, func() {}).
-// 		AddItem("2. Add Field", "", 0, func() {}).
-// 		AddItem("3. Edit Field", "", 0, func() {}).
-// 		AddItem("4. Revenue Report", "", 0, func() {})
-// 	nav.SetTitle("Welcome, " + session.UserSession.Username).SetBorder(true).SetTitleAlign(tview.AlignCenter)
-
-// 	mainLayout := tview.NewGrid().
-// 		SetBorders(false).
-// 		SetColumns(20, -1).
-// 		SetRows(3, 0, -1).
-// 		// AddItem(filter, 0, 0, 1, 1, 0, 0, false).
-// 		AddItem(nav, 1, 0, 1, 1, 0, 0, true)
-// 		// AddItem(setting, 2, 0, 1, 1, 0, 0, true).
-// 		// AddItem(content, 0, 1, 3, 1, 0, 0, false)
-
-// 	if err := app.SetRoot(mainLayout, true).EnableMouse(true).Run(); err != nil {
-// 		panic(err)
-// 	}
-// }
-
 package cli
 
 import (
@@ -50,12 +19,9 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 		ShowSecondaryText(false).
 		AddItem("Profile", "", 0, func() {}).
 		AddItem("Field List", "", 0, func() {}).
+		AddItem("Add Field", "", 0, func() {}).
 		AddItem("Edit Field", "", 0, func() {})
 	nav.SetTitle("Welcome, " + session.UserSession.Username).SetBorder(true).SetTitleAlign(tview.AlignCenter)
-
-	// field := tview.NewList().
-	// 	ShowSecondaryText(false)
-	// field.SetTitle("Field Management").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	setting := tview.NewList().
 		ShowSecondaryText(false).
@@ -135,39 +101,18 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 			content.SetTitle("Field List")
 		case 2:
 			content.Clear().SetTitle("").SetBorder(false)
+			addFieldView := AddField(app, handler, content)
+			content.AddItem(addFieldView, 0, 1, true)
+			content.SetBorder(true)
+			content.SetTitle("Add Field")
+		case 3:
+			content.Clear().SetTitle("").SetBorder(false)
 			updateFieldView := UpdateFieldForm(app, handler, content)
 			content.AddItem(updateFieldView, 0, 1, true)
 			content.SetBorder(true)
 			content.SetTitle("Edit Field")
-			// case 2:
-			// 	content.Clear().SetTitle("").SetBorder(false)
-			// 	reservationView := tview.NewTextView().
-			// 		SetText("You selected Reservation Field.\nHere you can reserve a field.").
-			// 		SetDynamicColors(true).
-			// 		SetTextAlign(tview.AlignLeft).
-			// 		SetBorder(true).
-			// 		SetTitle("Reservation Field").
-			// 		SetTitleAlign(tview.AlignCenter)
-			// 	content.AddItem(reservationView, 0, 1, true)
-			// case 3:
-			// 	content.Clear().SetTitle("").SetBorder(false)
-			// 	fieldsView := ShowFields(app, handler, content)
-			// 	content.AddItem(fieldsView, 0, 1, true)
-			// 	content.SetBorder(true)
-			// 	content.SetTitle("Field List")
-			// case 5:
-			// 	content.Clear().SetTitle("").SetBorder(false)
-			// 	addFieldView := AddField(app, handler, content)
-			// 	content.AddItem(addFieldView, 0, 1, true)
-			// 	content.SetBorder(true)
-			// 	content.SetTitle("Add Field")
 		}
 	})
-
-	// field.SetSelectedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
-	// 	switch index {
-	// 	}
-	// })
 
 	setting.SetSelectedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
 		switch index {
