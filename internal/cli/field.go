@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"sportix-cli/constants"
 	"sportix-cli/internal/entity"
 	"sportix-cli/internal/utils"
 	"strconv"
@@ -154,3 +155,139 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 
 	return flex
 }
+
+func UpdateFieldForm(app *tview.Application, handler Handler, content *tview.Flex) tview.Primitive {
+	// addFieldForm := &entity.FormAddsField{}
+
+	// categories, _ := handler.Category.GetAllCategory()
+	// categoriesOptions, _ := utils.ConvertStructSliceToStringSlice(categories, "Name")
+
+	// locations, _ := handler.Location.GetAllLocation()
+
+	// locationOptions, _ := utils.ConvertStructSliceToStringSlice(locations, "Name")
+
+	form := tview.NewForm()
+
+	idInput := tview.NewInputField()
+	idInput.SetLabel("Field ID:").
+		SetFieldWidth(20).
+		SetDoneFunc(func(key tcell.Key) {
+			if key == tcell.KeyEnter {
+				id := idInput.GetText()
+				fieldID, err := strconv.Atoi(id)
+				if err != nil {
+					// showErrorModal(app, fmt.Errorf("invalid ID format"))
+					return
+				}
+
+				// Fetch the field by ID
+				field, err := handler.Field.GetFieldById(fieldID)
+				if err == nil {
+					field.FieldID = fieldID
+				}
+				// Populate the form with current field details
+				// form.Clear(true)
+				content.Clear().SetTitle("").SetBorder(false)
+				form.AddInputField("New Name", field.Name, 30, nil, func(text string) {
+					field.Name = text
+				}).
+					AddInputField("New Address", field.Address, 100, nil, func(text string) {
+						field.Address = text
+					}).
+					AddInputField("New Price", fmt.Sprintf("%.2f", field.Price), 10, nil, func(text string) {
+						price, err := strconv.ParseFloat(text, 64)
+						if err == nil {
+							field.Price = price
+						}
+					}).
+					// AddDropDown("Category", categoriesOptions, 0, func(option string, index int) {
+					// 	field.Category.CategoryID = index + 1
+					// }).
+					// AddDropDown("Location", locationOptions, 0, func(option string, index int) {
+					// 	field.Location.LocationID = index + 1
+					// }).
+					AddInputField("New Bathroom Count", strconv.Itoa(field.Facility.Bathroom), 10, nil, func(text string) {
+						bathroom, err := strconv.Atoi(text)
+						if err == nil {
+							field.Facility.Bathroom = bathroom
+						}
+					}).
+					AddDropDown("Has Cafeteria (yes/no)", constants.YesNoOptions, 0, func(option string, index int) {
+						field.Facility.Cafeteria = utils.IsYes(option)
+					}).
+					AddInputField("New Vehicle Park Area", strconv.Itoa(field.Facility.VehiclePark), 10, nil, func(text string) {
+						vehiclePark, err := strconv.Atoi(text)
+						if err == nil {
+							field.Facility.VehiclePark = vehiclePark
+						}
+					}).
+					AddDropDown("Has Prayer Room (yes/no)", constants.YesNoOptions, 0, func(option string, index int) {
+						field.Facility.PrayerRoom = utils.IsYes(option)
+					}).
+					AddInputField("New Changing Room Count", strconv.Itoa(field.Facility.ChangingRoom), 10, nil, func(text string) {
+						changingRoom, err := strconv.Atoi(text)
+						if err == nil {
+							field.Facility.ChangingRoom = changingRoom
+						}
+					}).
+					AddDropDown("Has CCTV (yes/no)", constants.YesNoOptions, 0, func(option string, index int) {
+						field.Facility.CCTV = utils.IsYes(option)
+					}).
+					AddButton("Update Field", func() {
+						err := handler.Field.EditField(field)
+						if err != nil {
+							showModal(app, handler, "Error", fmt.Sprintf("Error updating field: %v", err))
+							return
+						}
+						showModal(app, handler, "Success", "Field updated successfully!")
+					}).
+					AddButton("Cancel", func() {
+						OwnerDashboardPage(app, handler)
+					})
+
+				content.AddItem(form, 0, 1, true)
+			}
+		})
+
+	form.SetBorder(true).SetTitle("Update Field").SetTitleAlign(tview.AlignCenter)
+
+	content.AddItem(idInput, 0, 1, true)
+	return form
+}
+
+func showModal(app *tview.Application, handler Handler, title, message string) {
+	modal := tview.NewModal().
+		SetText(message).
+		AddButtons([]string{"OK"}).
+		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+			// app.SetRoot(nil, true) // Clear modal and return to previous screen
+			OwnerDashboardPage(app, handler)
+		})
+	modal.SetBorder(true).SetTitle(title).SetTitleAlign(tview.AlignCenter)
+	app.SetRoot(modal, true).SetFocus(modal)
+	app.Draw()
+}
+
+// func showErrorModal(app *tview.Application, err error) {
+// 	modal := tview.NewModal().
+// 		SetText(err.Error()).
+// 		AddButtons([]string{"OK"}).
+// 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+// 			if buttonLabel == "OK" {
+// 				OwnerDashboardPage(app, handler)
+// 			}
+// 		})
+// 	app.SetRoot(modal, true)
+// }
+
+// func showSuccessModal(app *tview.Application, message string) {
+// 	modal := tview.NewModal().
+// 		SetText(message).
+// 		AddButtons([]string{"OK"}).
+// 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+// 			if buttonLabel == "OK" {
+// 				OwnerDashboardPage(app, handler)
+// 			}
+// 		})
+// 	app.SetRoot(modal, true)
+// }

@@ -9,8 +9,11 @@ import (
 )
 
 type Handler struct {
-	User  handler.UserHandler
-	Field handler.FieldHandler
+	User     handler.UserHandler
+	Field    handler.FieldHandler
+	Facility handler.FacilityHandler
+	Category handler.CategoryHandler
+	Location handler.LocationHandler
 }
 
 func MainCLI(app *tview.Application, handler Handler) {

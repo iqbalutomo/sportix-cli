@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"sportix-cli/internal/entity"
 )
 
@@ -108,7 +109,31 @@ WHERE field_id=?`
 }
 
 func (f *fieldRepo) EditField(field *entity.Field) error {
-	editFieldQuery := `UPDATE fields SET name=?, price=?, address=? WHERE field_id=?;`
-	_, err := f.db.Exec(editFieldQuery, field.Name, field.Price, field.Address, "", field.FieldID)
-	return err
+	tx, err := f.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Update facilities
+	editFacility := `UPDATE facilities SET bathroom=?, cafeteria=?, vehicle_park=?, prayer_room=?, changing_room=?, cctv=? WHERE facility_id=?`
+	_, err = tx.Exec(editFacility, field.Facility.Bathroom, field.Facility.Cafeteria, field.Facility.VehiclePark, field.Facility.PrayerRoom, field.Facility.ChangingRoom, field.Facility.CCTV, field.Facility.FacilityID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error updating facilities table: %v", err)
+	}
+
+	// Update fields
+	editFieldQuery := `UPDATE fields SET name=?, price=?, address=? WHERE field_id=?`
+	_, err = tx.Exec(editFieldQuery, field.Name, field.Price, field.Address, field.FieldID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error updating fields table: %v", err)
+	}
+
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("error committing transaction: %v", err)
+	}
+	return nil
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"sportix-cli/internal/entity"
 	"sportix-cli/internal/repository"
@@ -9,6 +10,8 @@ import (
 type FieldHandler interface {
 	GetFields() ([]entity.Field, error)
 	GetFieldAvailableHours(fieldID uint) ([]entity.FieldAvailableHour, error)
+	GetFieldById(fieldID int) (*entity.Field, error)
+	EditField(updatedField *entity.Field) error
 }
 
 type fieldHandler struct {
@@ -35,6 +38,14 @@ func (f *fieldHandler) GetFieldAvailableHours(fieldID uint) ([]entity.FieldAvail
 	}
 
 	return fields, nil
+}
+
+func (f *fieldHandler) GetFieldById(fieldID int) (*entity.Field, error) {
+	field, err := f.repo.FindFieldById(int(fieldID))
+	if err != nil {
+		return nil, errors.New("failed to fetch Field By Id")
+	}
+	return field, nil
 }
 
 func (f *fieldHandler) EditField(updatedField *entity.Field) error {

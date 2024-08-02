@@ -8,6 +8,7 @@ import (
 
 type FacilityHandler interface {
 	GetFacilityById(facility_id int) (*entity.Facility, error)
+	EditFacilityById(updatedFacility *entity.Facility) error
 }
 
 type facilityHandler struct {
@@ -21,11 +22,11 @@ func NewFacilityHandler(repo repository.FacilityRepo) FacilityHandler {
 func (fa *facilityHandler) GetFacilityById(facility_id int) (*entity.Facility, error) {
 	facility, err := fa.repo.FindFacilityById(int(facility_id))
 	if err != nil {
-		return nil, errors.New("failed get facility")
+		return nil, errors.New("failed to fetch facility By Id")
 	}
 	return facility, nil
 }
 
-func (fa *facilityHandler) EditFacilityById(updatedFacility *entity.Facility) {
-
+func (fa *facilityHandler) EditFacilityById(updatedFacility *entity.Facility) error {
+	return fa.repo.EditFacility(updatedFacility)
 }
