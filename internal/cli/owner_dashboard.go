@@ -3,6 +3,7 @@ package cli
 import (
 	"sportix-cli/internal/session"
 	"sportix-cli/internal/styles"
+	"sportix-cli/internal/utils"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -11,21 +12,15 @@ import (
 func OwnerDashboardPage(app *tview.Application, handler Handler) {
 	wallet := tview.NewList().
 		ShowSecondaryText(false).
-		AddItem("Balance: ", "", 0, func() {})
+		AddItem("Balance: "+utils.FormatRupiah(session.UserSession.Balance), "", 0, func() {})
 	wallet.SetTitle("Your Wallet").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	nav := tview.NewList().
 		ShowSecondaryText(false).
 		AddItem("Profile", "", 0, func() {}).
-		AddItem("Reservation Field", "", 0, func() {})
-	nav.SetTitle("Welcome, " + session.UserSession.Username).SetBorder(true).SetTitleAlign(tview.AlignCenter)
-
-	field := tview.NewList().
-		ShowSecondaryText(false).
-		AddItem("Show all Fields", "", 0, func() {}).
-		AddItem("Add Field", "", 0, func() {}).
-		AddItem("Update Field", "", 0, func() {})
-	field.SetTitle("Field Management").SetBorder(true).SetTitleAlign(tview.AlignCenter)
+		AddItem("Field List", "", 0, func() {}).
+		AddItem("Add Field", "", 0, func() {})
+	nav.SetTitle("Menu").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	setting := tview.NewList().
 		ShowSecondaryText(false).
@@ -38,16 +33,15 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 			SetDynamicColors(true).
 			SetTextAlign(tview.AlignLeft).
 			SetBorder(true).
-			SetTitle("Owner Dashboard").
+			SetTitle("Owner Dashboard: Welcome, "+session.UserSession.Username).
 			SetTitleAlign(tview.AlignCenter), 0, 1, true)
 
 	styles.ApplyTheme(wallet)
 	styles.ApplyTheme(nav)
-	styles.ApplyTheme(field)
 	styles.ApplyTheme(setting)
 	styles.ApplyTheme(content)
 
-	focusOrder := []tview.Primitive{wallet, nav, field, setting, content}
+	focusOrder := []tview.Primitive{wallet, nav, setting, content}
 	setFocus := func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyTab:
@@ -70,7 +64,6 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 
 	wallet.SetInputCapture(setFocus)
 	nav.SetInputCapture(setFocus)
-	field.SetInputCapture(setFocus)
 	setting.SetInputCapture(setFocus)
 	content.SetInputCapture(setFocus)
 
@@ -89,14 +82,17 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 		switch index {
 		case 0:
 			content.Clear().SetTitle("").SetBorder(false)
-			profileView := tview.NewForm().AddInputField("Username", "", 20, nil, nil).
-				AddPasswordField("Password", "", 20, '*', nil)
-			profileView.
-				SetBorder(true).
-				SetTitle("Profile").
-				SetTitleAlign(tview.AlignCenter)
+			title := tview.NewForm().
+				AddTextView("Name:", session.UserSession.Username, 40, 2, true, false).
+				AddTextView("Email:", session.UserSession.Email, 40, 2, true, false)
+			content.AddItem(title, 0, 1, true)
 
-			content.AddItem(profileView, 0, 1, true)
+			// fieldsView := ShowFieldOwners(app, handler, content)
+			// content.AddItem(fieldsView, 0, 1, true)
+
+			content.SetBorder(true)
+			content.SetTitle("Profile")
+
 		case 1:
 			content.Clear().SetTitle("").SetBorder(false)
 			fieldsView := ShowFields(app, handler, content)
@@ -104,27 +100,6 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 			content.SetBorder(true)
 			content.SetTitle("Field List")
 		case 2:
-			content.Clear().SetTitle("").SetBorder(false)
-			reservationView := tview.NewTextView().
-				SetText("You selected Reservation Field.\nHere you can reserve a field.").
-				SetDynamicColors(true).
-				SetTextAlign(tview.AlignLeft).
-				SetBorder(true).
-				SetTitle("Reservation Field").
-				SetTitleAlign(tview.AlignCenter)
-			content.AddItem(reservationView, 0, 1, true)
-		}
-	})
-
-	field.SetSelectedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
-		switch index {
-		case 0:
-			content.Clear().SetTitle("").SetBorder(false)
-			fieldsView := ShowFields(app, handler, content)
-			content.AddItem(fieldsView, 0, 1, true)
-			content.SetBorder(true)
-			content.SetTitle("Field List")
-		case 1:
 			content.Clear().SetTitle("").SetBorder(false)
 			addFieldView := AddField(app, handler, content)
 			content.AddItem(addFieldView, 0, 1, true)
@@ -146,8 +121,7 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 		SetRows(3, 0, -1).
 		AddItem(wallet, 0, 0, 1, 1, 0, 0, false).
 		AddItem(nav, 1, 0, 1, 1, 0, 0, true).
-		AddItem(field, 2, 0, 1, 1, 0, 0, true).
-		AddItem(setting, 3, 0, 1, 1, 0, 0, true).
+		AddItem(setting, 2, 0, 1, 1, 0, 0, true).
 		AddItem(content, 0, 1, 3, 1, 0, 0, false)
 
 	if err := app.SetRoot(mainLayout, true).EnableMouse(true).Run(); err != nil {
