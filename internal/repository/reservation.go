@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"sportix-cli/internal/entity"
-	"sportix-cli/internal/session"
 	"time"
 )
 
@@ -32,8 +31,7 @@ func (r *reservationRepo) CreateReservation(reservation entity.ReservationForm) 
 	// Insert into reservations table
 	reservationQuery := `INSERT INTO reservations (user_id, field_id, status, reservation_date) VALUES (?, ?, ?, ?);`
 	reservationDate := time.Now().Format("2006-01-02")
-	result, err := r.db.Exec(reservationQuery, reservation.UserID, reservation.FieldID, reservation.ReservationStatus, reservationDate)
-
+	result, err := tx.Exec(reservationQuery, reservation.UserID, reservation.FieldID, reservation.ReservationStatus, reservationDate)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error inserting into reservations table: %v", err)
@@ -48,17 +46,15 @@ func (r *reservationRepo) CreateReservation(reservation entity.ReservationForm) 
 
 	// Insert into payments table
 	paymentQuery := `INSERT INTO payments (reservation_id, amount, status) VALUES (?, ?, ?);`
-	_, err = r.db.Exec(paymentQuery, reservationID, reservation.Amount, reservation.PaymentStatus)
+	_, err = tx.Exec(paymentQuery, int(reservationID), reservation.Amount, reservation.PaymentStatus)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error inserting into payments table: %v", err)
 	}
 
 	// Update Wallets table
-	updateBalance := session.UserSession.Balance - reservation.Amount
-	session.UserSession.Balance = updateBalance
-	walletQuery := `UPDATE wallets SET balance = ? WHERE user_id = ?;`
-	_, err = r.db.Exec(walletQuery, updateBalance, reservation.UserID)
+	walletQuery := `UPDATE wallets SET balance = balance - ? WHERE user_id = ?;`
+	_, err = tx.Exec(walletQuery, reservation.Amount, int(reservation.UserID))
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error updating wallets table: %v", err)
