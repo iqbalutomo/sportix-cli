@@ -55,7 +55,11 @@ func (u *userHandler) Register(name, email, password, role string) error {
 func (auth *userHandler) Login(email, password string) (*entity.User, error) {
 	user, err := auth.repo.ValidateUser(email, password)
 	if err != nil {
-		return user, err
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, errors.New("invalid credentials")
 	}
 
 	return user, nil

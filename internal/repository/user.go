@@ -10,7 +10,6 @@ import (
 
 type UserRepo interface {
 	CreateUser(user *entity.User) error
-	//CreateWallet(user *entity.User) error
 	FindUserByEmail(email string) (*entity.User, error)
 	ValidateUser(email, password string) (*entity.User, error)
 	FindBalanceByEmail(email string) (float64, error)
@@ -74,7 +73,7 @@ func (u *userRepo) FindUserByEmail(email string) (*entity.User, error) {
 
 	if err := rows.Scan(&user.UserID, &user.Username, &user.Password, &user.Email, &user.Role); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, err
 		}
 
 		return nil, err

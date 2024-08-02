@@ -10,6 +10,7 @@ import (
 
 type FieldHandler interface {
 	GetFields() ([]entity.Field, error)
+	GetFieldOwners(userID uint) ([]entity.Field, error)
 	GetFieldAvailableHours(fieldID uint) ([]entity.FieldAvailableHour, error)
 	AddField(field *entity.FormAddsField) error
 }
@@ -24,6 +25,15 @@ func NewFieldHandler(repo repository.FieldRepo) FieldHandler {
 
 func (f *fieldHandler) GetFields() ([]entity.Field, error) {
 	fields, err := f.repo.FindAllFields()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+
+	return fields, nil
+}
+
+func (f *fieldHandler) GetFieldOwners(userID uint) ([]entity.Field, error) {
+	fields, err := f.repo.FindAllFieldsByOwner(userID)
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
