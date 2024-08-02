@@ -49,10 +49,6 @@ func (u *userHandler) Register(name, email, password, role string) error {
 		return errors.New("failed to register")
 	}
 
-	if err := u.repo.CreateWallet(user); err != nil {
-		return err
-	}
-
 	return nil
 }
 

@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"sportix-cli/internal/entity"
 
 	"golang.org/x/crypto/bcrypt"
@@ -11,7 +10,7 @@ import (
 
 type UserRepo interface {
 	CreateUser(user *entity.User) error
-	CreateWallet(user *entity.User) error
+	//CreateWallet(user *entity.User) error
 	FindUserByEmail(email string) (*entity.User, error)
 	ValidateUser(email, password string) (*entity.User, error)
 	FindBalanceByEmail(email string) (float64, error)
@@ -27,22 +26,41 @@ func NewUserRepo(db *sql.DB) UserRepo {
 }
 
 func (u *userRepo) CreateUser(user *entity.User) error {
-	query := `INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?);`
-	_, err := u.db.Exec(query, user.Username, user.Email, user.Password, user.Role)
+	// Begin a transaction
+	tx, err := u.db.Begin()
 	if err != nil {
-		log.Fatal(err.Error())
 		return err
 	}
 
-	return nil
-}
-
-func (u *userRepo) CreateWallet(user *entity.User) error {
-	query := `INSERT INTO wallets (user_id) VALUES (?);`
-	_, err := u.db.Exec(query, user.UserID)
+	query := `INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?);`
+	result, err := u.db.Exec(query, user.Username, user.Email, user.Password, user.Role)
 	if err != nil {
-		log.Fatal(err.Error())
-		return err
+		tx.Rollback()
+		return fmt.Errorf("error creating user table: %v", err)
+	}
+
+	// Get the last inserted user ID
+	userID, err := result.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error getting last inserted user ID: %v", err)
+	}
+
+	user.UserID = uint(userID)
+
+	// Create a wallet for the user
+	query = `INSERT INTO wallets (user_id) VALUES (?);`
+	_, err = u.db.Exec(query, user.UserID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error creating wallet table: %v", err)
+	}
+
+	// Commit the transaction
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("error committing transaction: %v", err)
 	}
 
 	return nil
@@ -65,8 +83,8 @@ func (u *userRepo) FindUserByEmail(email string) (*entity.User, error) {
 	return &user, nil
 }
 
-func (auth *userRepo) ValidateUser(email, password string) (*entity.User, error) {
-	user, err := auth.FindUserByEmail(email)
+func (u *userRepo) ValidateUser(email, password string) (*entity.User, error) {
+	user, err := u.FindUserByEmail(email)
 	if err != nil {
 		return nil, err
 	}
