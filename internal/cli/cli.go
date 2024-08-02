@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"sportix-cli/internal/entity"
 	"sportix-cli/internal/handler"
 	"sportix-cli/internal/session"
 
@@ -17,23 +16,6 @@ type Handler struct {
 }
 
 func MainCLI(app *tview.Application, handler Handler) {
-	user, err := handler.User.Login("iqbal@sportix.com", "gogogo")
-	if err != nil {
-		return
-	}
-	saldo, err := handler.User.GetBalanceByEmail(user.Email)
-	if err != nil {
-		return
-	}
-	currentUser := &entity.CurrentUser{
-		UserID:   user.UserID,
-		Username: user.Username,
-		Email:    user.Email,
-		Role:     user.Role,
-		Balance:  saldo,
-	}
-	session.UserSession = currentUser
-
 	if session.UserSession == nil {
 		AuthModal(app, handler)
 	} else {

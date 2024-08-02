@@ -29,14 +29,3 @@ type FormAddsField struct {
 	CCTV         string
 	CreatedByID  string
 }
-
-type FieldRepo struct {
-	FieldID    int
-	Name       string
-	Price      float64
-	CategoryID int
-	LocationID int
-	Address    string
-	FacilityID int
-	CreatedBy  int
-}

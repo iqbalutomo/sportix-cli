@@ -175,88 +175,101 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 	return flex
 }
 
-func AddField(app *tview.Application, handler Handler, content *tview.Flex) tview.Primitive {
+func UpdateFieldForm(app *tview.Application, handler Handler, content *tview.Flex) tview.Primitive {
+	form := tview.NewForm()
 
-	addFieldForm := &entity.FormAddsField{}
+	idInput := tview.NewInputField()
+	idInput.SetLabel("Field ID:").
+		SetFieldWidth(20).
+		SetDoneFunc(func(key tcell.Key) {
+			if key == tcell.KeyEnter {
+				id := idInput.GetText()
+				fieldID, err := strconv.Atoi(id)
+				if err != nil {
+					return
+				}
 
-	categories, _ := handler.Category.GetAllCategory()
-	categoriesOptions, _ := utils.ConvertStructSliceToStringSlice(categories, "Name")
-
-	locations, _ := handler.Location.GetAllLocation()
-
-	locationOptions, _ := utils.ConvertStructSliceToStringSlice(locations, "Name")
-
-	// Create form
-	form := tview.NewForm().
-		AddInputField("Name:", "", 40, nil, func(text string) {
-			addFieldForm.Name = text
-		}).
-		AddInputField("Price", "", 40, nil, func(text string) {
-			addFieldForm.Price = text
-		}).
-		AddDropDown("Category", categoriesOptions, 0, func(option string, index int) {
-			addFieldForm.CategoryID = index + 1
-		}).
-		AddDropDown("Location", locationOptions, 0, func(option string, index int) {
-			addFieldForm.LocationID = index + 1
-		}).
-		AddInputField("Address", "", 40, nil, func(text string) {
-			addFieldForm.Address = text
-		}).
-		AddInputField("Bathroom", "", 40, nil, func(text string) {
-			addFieldForm.Bathroom = text
-		}).
-		AddDropDown("Cafeteria", constants.YesNoOptions, 0, func(option string, index int) {
-			addFieldForm.Cafeteria = option
-		}).
-		AddInputField("Vehicle Park", "", 40, nil, func(text string) {
-			addFieldForm.VehiclePark = text
-		}).
-		AddDropDown("Prayer Room", constants.YesNoOptions, 0, func(option string, index int) {
-			addFieldForm.PrayerRoom = option
-		}).
-		AddInputField("Changing Room", "", 40, nil, func(text string) {
-			addFieldForm.ChangingRoom = text
-		}).
-		AddDropDown("CCTV", constants.YesNoOptions, 0, func(option string, index int) {
-			addFieldForm.CCTV = option
-		}).
-		AddButton("Add Field", func() {
-			// Check if it AddInputField is empty
-			if addFieldForm.Name == "" || addFieldForm.Price == "" || addFieldForm.Address == "" || addFieldForm.Bathroom == "" || addFieldForm.VehiclePark == "" || addFieldForm.ChangingRoom == "" {
-				errorModal := tview.NewModal().
-					SetText("All field cannot be empty").
-					AddButtons([]string{"OK"}).
-					SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+				field, err := handler.Field.GetFieldById(fieldID)
+				if err != nil {
+					showModal(app, handler, "Error", fmt.Sprintln("Your field not found."))
+					return
+				}
+				if err == nil {
+					field.FieldID = fieldID
+				}
+				content.Clear().SetTitle("").SetBorder(false)
+				form.AddInputField("New Name", field.Name, 30, nil, func(text string) {
+					field.Name = text
+				}).
+					AddInputField("New Address", field.Address, 100, nil, func(text string) {
+						field.Address = text
+					}).
+					AddInputField("New Price", fmt.Sprintf("%.2f", field.Price), 10, nil, func(text string) {
+						price, err := strconv.ParseFloat(text, 64)
+						if err == nil {
+							field.Price = price
+						}
+					}).
+					AddInputField("New Bathroom Count", strconv.Itoa(field.Facility.Bathroom), 10, nil, func(text string) {
+						bathroom, err := strconv.Atoi(text)
+						if err == nil {
+							field.Facility.Bathroom = bathroom
+						}
+					}).
+					AddDropDown("Has Cafeteria (yes/no)", constants.YesNoOptions, 0, func(option string, index int) {
+						field.Facility.Cafeteria = utils.IsYes(option)
+					}).
+					AddInputField("New Vehicle Park Area", strconv.Itoa(field.Facility.VehiclePark), 10, nil, func(text string) {
+						vehiclePark, err := strconv.Atoi(text)
+						if err == nil {
+							field.Facility.VehiclePark = vehiclePark
+						}
+					}).
+					AddDropDown("Has Prayer Room (yes/no)", constants.YesNoOptions, 0, func(option string, index int) {
+						field.Facility.PrayerRoom = utils.IsYes(option)
+					}).
+					AddInputField("New Changing Room Count", strconv.Itoa(field.Facility.ChangingRoom), 10, nil, func(text string) {
+						changingRoom, err := strconv.Atoi(text)
+						if err == nil {
+							field.Facility.ChangingRoom = changingRoom
+						}
+					}).
+					AddDropDown("Has CCTV (yes/no)", constants.YesNoOptions, 0, func(option string, index int) {
+						field.Facility.CCTV = utils.IsYes(option)
+					}).
+					AddButton("Update Field", func() {
+						err := handler.Field.EditField(field)
+						if err != nil {
+							showModal(app, handler, "Error", fmt.Sprintf("Error updating field: %v", err))
+							return
+						}
+						showModal(app, handler, "Success", "Field updated successfully!")
+					}).
+					AddButton("Cancel", func() {
 						OwnerDashboardPage(app, handler)
 					})
-				app.SetRoot(errorModal, true).EnableMouse(true).Run()
-				return
+
+				content.AddItem(form, 0, 1, true)
 			}
-
-			err := handler.Field.AddField(addFieldForm)
-
-			if err != nil {
-				errorModal := tview.NewModal().
-					SetText(err.Error()).
-					AddButtons([]string{"OK"}).
-					SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-						OwnerDashboardPage(app, handler)
-					})
-				app.SetRoot(errorModal, true).EnableMouse(true).Run()
-				return
-			}
-
-			successModal := tview.NewModal().
-				SetText("Add a New Field Successfully").
-				AddButtons([]string{"OK"}).
-				SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-					OwnerDashboardPage(app, handler)
-				})
-
-			app.SetRoot(successModal, true).EnableMouse(true).Run()
 		})
 
-	return form
+	form.SetBorder(true).SetTitle("Update Field").SetTitleAlign(tview.AlignCenter)
 
+	content.AddItem(idInput, 0, 1, true)
+	return form
+}
+
+func showModal(app *tview.Application, handler Handler, title, message string) {
+	modal := tview.NewModal().
+		SetText(message).
+		AddButtons([]string{"OK"}).
+		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+			if session.UserSession.Role == constants.User {
+				UserDashboardPage(app, handler)
+			} else {
+				OwnerDashboardPage(app, handler)
+			}
+		})
+	modal.SetBorder(true).SetTitle(title).SetTitleAlign(tview.AlignCenter)
+	app.SetRoot(modal, true).SetFocus(modal)
 }
