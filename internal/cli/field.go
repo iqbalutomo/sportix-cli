@@ -264,7 +264,11 @@ func showModal(app *tview.Application, handler Handler, title, message string) {
 		SetText(message).
 		AddButtons([]string{"OK"}).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-			OwnerDashboardPage(app, handler)
+			if session.UserSession.Role == constants.User {
+				UserDashboardPage(app, handler)
+			} else {
+				OwnerDashboardPage(app, handler)
+			}
 		})
 	modal.SetBorder(true).SetTitle(title).SetTitleAlign(tview.AlignCenter)
 	app.SetRoot(modal, true).SetFocus(modal)
