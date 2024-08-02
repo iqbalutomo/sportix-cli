@@ -567,6 +567,9 @@ VALUES (1, 1000000.00),
        (4, 275000.00),
        (5, 50000.00);
 
+INSERT INTO wallets (user_id)
+    VALUES(11);
+
 INSERT INTO deposits (amount, wallet_id)
 VALUES (50000.00, 1),
        (325000.00, 2),

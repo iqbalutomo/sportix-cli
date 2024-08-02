@@ -29,6 +29,7 @@
 // 	}
 // }
 
+
 package cli
 
 import (
@@ -43,6 +44,7 @@ func OwnerDashboardPage(app *tview.Application, handler Handler) {
 	wallet := tview.NewList().
 		ShowSecondaryText(false).
 		AddItem("Balance: ", "", 0, func() {})
+
 	wallet.SetTitle("Your Wallet").SetBorder(true).SetTitleAlign(tview.AlignCenter)
 
 	nav := tview.NewList().

@@ -11,6 +11,8 @@ import (
 type UserHandler interface {
 	Register(name, email, password, role string) error
 	Login(email, password string) (*entity.User, error)
+	GetBalanceByEmail(email string) (float64, error)
+	PutBalance(userID uint, balance, deposit float64) error
 }
 
 type userHandler struct {
@@ -53,8 +55,30 @@ func (u *userHandler) Register(name, email, password, role string) error {
 func (auth *userHandler) Login(email, password string) (*entity.User, error) {
 	user, err := auth.repo.ValidateUser(email, password)
 	if err != nil {
-		return user, err
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, errors.New("invalid credentials")
 	}
 
 	return user, nil
+}
+
+func (u *userHandler) GetBalanceByEmail(email string) (float64, error) {
+	balance, err := u.repo.FindBalanceByEmail(email)
+	if err != nil {
+		return 0, nil
+	}
+
+	return balance, nil
+}
+
+func (u *userHandler) PutBalance(userID uint, balance, deposit float64) error {
+	totalBalance := balance + deposit
+	if err := u.repo.UpdateBalance(userID, totalBalance); err != nil {
+		return err
+	}
+
+	return nil
 }

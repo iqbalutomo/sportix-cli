@@ -53,7 +53,7 @@ CREATE TABLE fields
     updated_at  DATETIME DEFAULT NOW() ON UPDATE NOW()
 );
 
--- Create the locations table
+-- Create the location table
 CREATE TABLE locations
 (
     location_id INT PRIMARY KEY AUTO_INCREMENT,

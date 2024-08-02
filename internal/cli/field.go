@@ -18,11 +18,10 @@ func ShowFields(app *tview.Application, handler Handler, content *tview.Flex) tv
 
 	headers := []string{"ID", "Name", "Price", "Category", "Location", "Address"}
 	for col, header := range headers {
-		table.SetCell(0, col,
-			tview.NewTableCell(header).
-				SetTextColor(tcell.ColorYellow).
-				SetAlign(tview.AlignCenter).
-				SetSelectable(false))
+		table.SetCell(0, col, tview.NewTableCell(header).
+			SetTextColor(tcell.ColorYellow).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
 	}
 
 	fields, err := handler.Field.GetFields()
@@ -41,26 +40,19 @@ func ShowFields(app *tview.Application, handler Handler, content *tview.Flex) tv
 
 	for row, item := range fields {
 		fieldIDStr := strconv.FormatUint(uint64(item.FieldID), 10)
-		priceStr := strconv.FormatFloat(item.Price, 'f', 2, 64)
 
-		table.SetCell(row+1, 0,
-			tview.NewTableCell(fieldIDStr).
-				SetAlign(tview.AlignCenter))
-		table.SetCell(row+1, 1,
-			tview.NewTableCell(item.Name).
-				SetAlign(tview.AlignCenter))
-		table.SetCell(row+1, 2,
-			tview.NewTableCell(priceStr).
-				SetAlign(tview.AlignCenter))
-		table.SetCell(row+1, 3,
-			tview.NewTableCell(item.Category.Name).
-				SetAlign(tview.AlignCenter))
-		table.SetCell(row+1, 4,
-			tview.NewTableCell(item.Location.Name).
-				SetAlign(tview.AlignCenter))
-		table.SetCell(row+1, 5,
-			tview.NewTableCell(item.Address).
-				SetAlign(tview.AlignCenter))
+		table.SetCell(row+1, 0, tview.NewTableCell(fieldIDStr).
+			SetAlign(tview.AlignCenter))
+		table.SetCell(row+1, 1, tview.NewTableCell(item.Name).
+			SetAlign(tview.AlignCenter))
+		table.SetCell(row+1, 2, tview.NewTableCell(utils.FormatRupiah(item.Price)).
+			SetAlign(tview.AlignCenter))
+		table.SetCell(row+1, 3, tview.NewTableCell(item.Category.Name).
+			SetAlign(tview.AlignCenter))
+		table.SetCell(row+1, 4, tview.NewTableCell(item.Location.Name).
+			SetAlign(tview.AlignCenter))
+		table.SetCell(row+1, 5, tview.NewTableCell(item.Address).
+			SetAlign(tview.AlignCenter))
 	}
 
 	table.SetSelectedFunc(func(row, column int) {
@@ -78,11 +70,7 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 	flex := tview.NewFlex().SetDirection(tview.FlexColumn)
 
 	detailText := tview.NewTextView().
-		SetText(fmt.Sprintf("Name: %s\n\nCategory: %s\n\nPrice: %s",
-			field.Name,
-			field.Category.Name,
-			utils.FormatRupiah(field.Price),
-		)).
+		SetText(fmt.Sprintf("Name: %s\n\nCategory: %s\n\nPrice: %s", field.Name, field.Category.Name, utils.FormatRupiah(field.Price))).
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignLeft)
 
@@ -91,14 +79,7 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 		SetTitleAlign(tview.AlignCenter)
 
 	facilitiesText := tview.NewTextView().
-		SetText(fmt.Sprintf(
-			"Bathroom: %d\n\nCafeteria: %s\n\nVehicle Park: %d\n\nPrayer Room: %s\n\nChanging Room: %d\n\nCCTV: %s",
-			field.Facility.Bathroom,
-			utils.BoolToYesNo(field.Facility.Cafeteria),
-			field.Facility.VehiclePark,
-			utils.BoolToYesNo(field.Facility.PrayerRoom),
-			field.Facility.ChangingRoom,
-			utils.BoolToYesNo(field.Facility.CCTV))).
+		SetText(fmt.Sprintf("Bathroom: %d\n\nCafeteria: %s\n\nVehicle Park: %d\n\nPrayer Room: %s\n\nChanging Room: %d\n\nCCTV: %s", field.Facility.Bathroom, utils.BoolToYesNo(field.Facility.Cafeteria), field.Facility.VehiclePark, utils.BoolToYesNo(field.Facility.PrayerRoom), field.Facility.ChangingRoom, utils.BoolToYesNo(field.Facility.CCTV))).
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignLeft)
 	facilitiesText.SetBorder(true).
@@ -112,11 +93,10 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 
 	headers := []string{"Start Time", "End Time", "Status"}
 	for col, header := range headers {
-		hoursTable.SetCell(0, col,
-			tview.NewTableCell(header).
-				SetTextColor(tcell.ColorYellow).
-				SetAlign(tview.AlignCenter).
-				SetSelectable(false))
+		hoursTable.SetCell(0, col, tview.NewTableCell(header).
+			SetTextColor(tcell.ColorYellow).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
 	}
 
 	fieldAvailableHours, err := handler.Field.GetFieldAvailableHours(uint(field.FieldID))
@@ -134,15 +114,12 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 	}
 
 	for row, data := range fieldAvailableHours {
-		hoursTable.SetCell(row+1, 0,
-			tview.NewTableCell(data.AvailableHourID.StartTime).
-				SetAlign(tview.AlignCenter))
-		hoursTable.SetCell(row+1, 1,
-			tview.NewTableCell(data.AvailableHourID.EndTime).
-				SetAlign(tview.AlignCenter))
-		hoursTable.SetCell(row+1, 2,
-			tview.NewTableCell(data.Status).
-				SetAlign(tview.AlignCenter))
+		hoursTable.SetCell(row+1, 0, tview.NewTableCell(data.AvailableHourID.StartTime).
+			SetAlign(tview.AlignCenter))
+		hoursTable.SetCell(row+1, 1, tview.NewTableCell(data.AvailableHourID.EndTime).
+			SetAlign(tview.AlignCenter))
+		hoursTable.SetCell(row+1, 2, tview.NewTableCell(data.Status).
+			SetAlign(tview.AlignCenter))
 	}
 	hoursTable.SetBorder(true).SetTitle("Available Hours").SetTitleAlign(tview.AlignCenter)
 
@@ -155,6 +132,7 @@ func ShowFieldDetail(app *tview.Application, selectedRow int, field entity.Field
 
 	return flex
 }
+
 
 func UpdateFieldForm(app *tview.Application, handler Handler, content *tview.Flex) tview.Primitive {
 	// addFieldForm := &entity.FormAddsField{}
